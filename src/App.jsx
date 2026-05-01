@@ -6,6 +6,10 @@ import Customers from './dashboard/components/Customers'
 import Reports from './dashboard/components/Reports'
 import Settings from './dashboard/components/Settings'
 import DashboardHeader from './dashboard/components/DashboardHeader'
+<<<<<<< HEAD
+=======
+import Footer from './dashboard/components/WebMateFooter'
+>>>>>>> master
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App() {
@@ -78,6 +82,10 @@ function App() {
               <Route path="/settings" element={<Settings parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} />} />
             </Routes>
           </div>
+<<<<<<< HEAD
+=======
+          <Footer />
+>>>>>>> master
         </div>
       </main>
     </BrowserRouter>
