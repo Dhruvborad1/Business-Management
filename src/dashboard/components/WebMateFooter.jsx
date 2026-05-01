@@ -1,4 +1,5 @@
-import { FiMail, FiMapPin, FiPhone, FiFacebook, FiInstagram, FiTwitter, FiLinkedin, FiArrowRight } from 'react-icons/fi'
+import { FiMail, FiMapPin, FiPhone, FiFacebook, FiInstagram, FiTwitter, FiLinkedin, FiArrowRight, FiChevronDown } from 'react-icons/fi'
+import { useState } from 'react'
 
 const footerSections = [
   {
@@ -8,7 +9,17 @@ const footerSections = [
       { label: 'Orders', to: '/orders' },
       { label: 'Inventory', to: '/inventory' },
       { label: 'Customers', to: '/customers' },
-      { label: 'Reports', to: '/reports' },
+      { 
+        label: 'Reports', 
+        to: '/reports',
+        hasDropdown: true,
+        dropdownItems: [
+          { label: 'Party Report', to: '/reports?type=party' },
+          { label: 'Challan Report', to: '/reports?type=challan' },
+          { label: 'Your Chalan Report', to: '/reports?type=yourchalan' },
+          { label: 'Summary Report', to: '/reports?type=summary' },
+        ]
+      },
     ],
   },
   {
