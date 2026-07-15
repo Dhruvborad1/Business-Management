@@ -193,7 +193,7 @@ function DataEntryForm({
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Chalan Entry Form</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Party Chalan Entry Form</h2>
           <p className="mt-2 text-sm text-slate-600">{message}</p>
         </div>
       </div>
@@ -386,7 +386,7 @@ function DataEntryForm({
             onClick={onAddParty}
             className="mt-3 inline-flex h-10 items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
-            Open Party Details Form
+            Add Party
           </button>
         </div>
       )}
@@ -413,7 +413,7 @@ function DataEntryForm({
                 <button
                   type="button"
                   onClick={handleAddType}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
                 >
                   <FiPlus size={14} />
                   Add
@@ -474,6 +474,12 @@ function DataEntryForm({
           Save Challan
         </button>
       </div>
+
+      {message && (
+        <div className={`mt-3 rounded-xl border px-4 py-3 text-sm ${message.toLowerCase().includes('success') ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'}`}>
+          {message}
+        </div>
+      )}
     </motion.form>
   )
 }

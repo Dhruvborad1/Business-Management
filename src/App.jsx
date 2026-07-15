@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import Dashboard from './dashboard/components/Dashboard'
-import Orders from './dashboard/components/Orders'
-import Inventory from './dashboard/components/Inventory'
-import Customers from './dashboard/components/Customers'
+import Orders from './dashboard/components/orders'
+import Inventory from './dashboard/components/inventory'
+import Customers from './dashboard/components/customers'
 import Reports from './dashboard/components/Reports'
-import Settings from './dashboard/components/Settings'
+import Directory from './dashboard/components/Directory'
+import Settings from './dashboard/components/settings'
+import User from './dashboard/components/user'
 import DashboardHeader from './dashboard/components/DashboardHeader'
 import Footer from './dashboard/components/WebMateFooter'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -76,7 +78,9 @@ function App() {
               <Route path="/inventory" element={<Inventory />} />
               <Route path="/customers" element={<Customers />} />
               <Route path="/reports" element={<Reports parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} />} />
-              <Route path="/settings" element={<Settings parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} />} />
+              <Route path="/directory" element={<Directory parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/user" element={<User />} />
             </Routes>
           </div>
           <Footer />

@@ -3,13 +3,13 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { FiEdit2, FiTrash2, FiX } from 'react-icons/fi'
 import { useLocation, useNavigate } from 'react-router-dom'
 import HeroSection from './HeroSection'
-import PartyList from '../settings/PartyList'
+import PartyList from '../directory/PartyList'
 import { formatDisplayDate } from '../utils/formatDate'
 import YourChalanReport from '../yourChalan/YourChalanReport'
 
 const reportTabs = [
   { id: 'party', label: 'Party Details' },
-  { id: 'challan', label: 'Challan Details' },
+  { id: 'challan', label: 'Party Challan Details' },
   { id: 'your-chalan', label: 'Your Chalan Detail' },
 ]
 
@@ -151,10 +151,10 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
       prev.map((challan) =>
         challan.id === selectedChallan.id
           ? {
-              ...challan,
-              ...editingChallanForm,
-              totalQuantity: Number(editingChallanForm.totalQuantity),
-            }
+            ...challan,
+            ...editingChallanForm,
+            totalQuantity: Number(editingChallanForm.totalQuantity),
+          }
           : challan,
       ),
     )
@@ -215,7 +215,7 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900">Challan Details</h2>
+                    <h2 className="text-lg font-semibold text-slate-900">Party Challan Details</h2>
                     <p className="mt-1 text-sm text-slate-500">Click any challan row to view complete details.</p>
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
@@ -253,11 +253,10 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                               setPartyFilterSearch('')
                               setIsPartyFilterOpen(false)
                             }}
-                            className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${
-                              selectedFilterPartyId === 'all'
+                            className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedFilterPartyId === 'all'
                                 ? 'bg-violet-50 text-violet-700'
                                 : 'text-slate-700 hover:bg-violet-50'
-                            }`}
+                              }`}
                           >
                             <span>All Parties</span>
                           </button>
@@ -276,11 +275,10 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                                   setPartyFilterSearch('')
                                   setIsPartyFilterOpen(false)
                                 }}
-                                className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${
-                                  selectedFilterPartyId === party.id
+                                className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedFilterPartyId === party.id
                                     ? 'bg-violet-50 text-violet-700'
                                     : 'text-slate-700 hover:bg-violet-50'
-                                }`}
+                                  }`}
                               >
                                 <span>{party.partyName}</span>
                                 <span className="text-xs text-slate-400">{party.city}</span>
@@ -293,12 +291,14 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                   </div>
                 </div>
 
-                <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+                {/* single scroll container (vertical) with sticky header; shows ~10 rows */}
+                <div className="mt-4 rounded-2xl border border-slate-200 overflow-auto" style={{ maxHeight: '560px' }}>
                   <table className="min-w-full text-left text-sm">
-                    <thead className="bg-slate-900 text-white">
+                    <thead className="bg-slate-900 text-white sticky top-0 z-10">
                       <tr>
-                        <th className="px-4 py-3 font-semibold">Challan No.</th>
+                        <th className="px-4 py-3 font-semibold">#</th>
                         <th className="px-4 py-3 font-semibold">Party</th>
+                        <th className="px-4 py-3 font-semibold">Challan No.</th>
                         <th className="px-4 py-3 font-semibold">Type</th>
                         <th className="px-4 py-3 font-semibold">Qty</th>
                         <th className="px-4 py-3 font-semibold">Date</th>
@@ -307,23 +307,23 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                     <tbody>
                       {filteredChallans.length === 0 ? (
                         <tr>
-                          <td colSpan="5" className="px-4 py-8 text-center text-slate-500">
+                          <td colSpan="6" className="px-4 py-8 text-center text-slate-500">
                             No challan details available for this party.
                           </td>
                         </tr>
                       ) : (
-                        filteredChallans.map((challan) => (
+                        filteredChallans.map((challan, index) => (
                           <tr
                             key={challan.id}
                             onClick={() => setSelectedChallanId(challan.id)}
-                            className={`cursor-pointer border-t border-slate-200 transition ${
-                              selectedChallanId === challan.id
+                            className={`cursor-pointer border-t border-slate-200 transition ${selectedChallanId === challan.id
                                 ? 'bg-violet-50 text-violet-900'
                                 : 'text-slate-700 hover:bg-slate-50'
-                            }`}
+                              }`}
                           >
-                            <td className="px-4 py-3 font-medium">{challan.challanNumber}</td>
+                            <td className="px-4 py-3 font-medium">{index + 1}</td>
                             <td className="px-4 py-3">{challan.partyName}</td>
+                            <td className="px-4 py-3 font-medium">{challan.challanNumber}</td>
                             <td className="px-4 py-3">{challan.quantityType}</td>
                             <td className="px-4 py-3">{challan.totalQuantity}</td>
                             <td className="px-4 py-3">{formatDisplayDate(challan.challanDate)}</td>
@@ -419,7 +419,7 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                       <button
                         type="button"
                         onClick={handleEditSave}
-                        className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700"
+                        className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:from-violet-700 hover:to-indigo-700 hover:-translate-y-0.5 hover:shadow-lg"
                       >
                         Save Changes
                       </button>
@@ -550,3 +550,8 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
 }
 
 export default Reports
+
+
+
+
+

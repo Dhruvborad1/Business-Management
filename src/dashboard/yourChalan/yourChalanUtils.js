@@ -1,5 +1,5 @@
 export const companyDefaults = {
-  companyName: 'GURUKRUPA FASHION',
+  companyName: 'RIYA FASHION',
   address: '1,2 1ST FLOOR,KRISHNA IND BEHIND HARI OM MILL VED ROAD,SURAT',
   phone: '9574336917',
   mobile: '93757 02200 - 99982 09649',
@@ -56,7 +56,9 @@ export const createInitialYourChalanForm = (yourChalans = []) => {
 export const getRowTotalPieces = (row) =>
   ['plain', 'short', 'work', 'sample'].reduce((sum, key) => sum + Number(row[key] || 0), 0)
 
-export const getRowAmount = (row) => getRowTotalPieces(row) * Number(row.rate || 0)
+export const getRowChargeablePieces = (row) => Number(row.work || 0) + Number(row.sample || 0)
+
+export const getRowAmount = (row) => getRowChargeablePieces(row) * Number(row.rate || 0)
 
 export const getYourChalanTotals = (rows) =>
   rows.reduce(
@@ -70,6 +72,23 @@ export const getYourChalanTotals = (rows) =>
     }),
     { plain: 0, short: 0, work: 0, sample: 0, totalPieces: 0, amount: 0 },
   )
+
+export const buildQuantityUsage = (rows, partyId, getRowChallanKey) =>
+  rows.reduce((usage, row) => {
+    const quantity = Number(row.plain || 0) + Number(row.short || 0) + Number(row.work || 0) + Number(row.sample || 0)
+    const key = getRowChallanKey(row, partyId)
+
+    if (!key || quantity <= 0) {
+      return usage
+    }
+
+    const existing = usage.get(key) || { quantity: 0, row }
+    usage.set(key, { quantity: existing.quantity + quantity, row })
+    return usage
+  }, new Map())
+
+export const buildQuantityErrorMessage = ({ challanNumber, availableQuantity, enteredQuantity }) =>
+  `Inward challan ${challanNumber} has only ${availableQuantity} qty available. You entered ${enteredQuantity} qty.`
 
 const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen']
 const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety']

@@ -1,13 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { FiMenu, FiX, FiSettings, FiChevronDown } from 'react-icons/fi'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { FiMenu, FiX, FiSettings, FiUser, FiChevronDown } from 'react-icons/fi'
 
 const pageLinks = [
   { label: 'Dashboard', to: '/' },
   { label: 'Orders', to: '/orders' },
   { label: 'Inventory', to: '/inventory' },
   { label: 'Customers', to: '/customers' },
+  { label: 'Directory', to: '/directory' },
+]
+
+const actionLinks = [
+  { label: 'Settings', to: '/settings', icon: FiSettings },
+  { label: 'User', to: '/user', icon: FiUser },
 ]
 
 function DashboardHeader() {
@@ -84,7 +90,7 @@ function DashboardHeader() {
       }`}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Riya Fashion</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl"><Link to="/">Riya Fashion</Link></h1>
             <button
               onClick={toggleSidebar}
               className="rounded-lg bg-slate-100 p-2 text-slate-700 transition hover:bg-violet-100 hover:text-violet-700 lg:hidden"
@@ -141,7 +147,7 @@ function DashboardHeader() {
                       onClick={() => openReportView('challan')}
                       className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-violet-100 hover:text-violet-700"
                     >
-                      Challan Details
+                      Party Challan Details
                     </button>
                     <button
                       onClick={() => openReportView('your-chalan')}
@@ -154,17 +160,30 @@ function DashboardHeader() {
               </AnimatePresence>
             </div>
 
-            {/* Settings Icon Button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-              className="settings-icon-btn"
-              aria-label="Settings"
-              onClick={() => window.location.href = '/settings'}
-            >
-              <FiSettings size={20} />
-            </motion.button>
+            <div className="flex items-center gap-2">
+              {actionLinks.map((item) => {
+                const Icon = item.icon
+
+                return (
+                  <NavLink
+                    key={item.label}
+                    to={item.to}
+                    aria-label={item.label}
+                    title={item.label}
+                    className={({ isActive }) =>
+                      `inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition ${
+                        isActive
+                          ? 'bg-violet-600 text-white shadow'
+                          : 'bg-slate-100 text-slate-700 hover:bg-violet-100 hover:text-violet-700'
+                      }`
+                    }
+                  >
+                    <Icon size={18} />
+                  </NavLink>
+                )
+              })}
+            </div>
+
           </div>
         </div>
       </div>
@@ -259,7 +278,7 @@ function DashboardHeader() {
                         onClick={() => openReportView('challan')}
                         className="mt-1 block w-full rounded-lg bg-slate-50 px-4 py-2 text-left text-sm text-slate-700 hover:bg-violet-100 hover:text-violet-700"
                       >
-                        Challan Details
+                        Party Challan Details
                       </button>
                       <button
                         onClick={() => openReportView('your-chalan')}
@@ -271,27 +290,33 @@ function DashboardHeader() {
                   )}
                 </motion.div>
 
-                {/* Settings Button in Sidebar */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: (pageLinks.length + 1) * 0.1 }}
-                >
-                  <NavLink
-                    to="/settings"
-                    onClick={closeSidebar}
-                    className={({ isActive }) =>
-                      `flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium transition ${
-                        isActive
-                          ? 'bg-violet-600 text-white shadow'
-                          : 'bg-slate-100 text-slate-700 hover:bg-violet-100 hover:text-violet-700'
-                      }`
-                    }
-                  >
-                    <FiSettings size={18} />
-                    Settings
-                  </NavLink>
-                </motion.div>
+                {actionLinks.map((item, index) => {
+                  const Icon = item.icon
+
+                  return (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (pageLinks.length + index + 1) * 0.1 }}
+                    >
+                      <NavLink
+                        to={item.to}
+                        onClick={closeSidebar}
+                        className={({ isActive }) =>
+                          `flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium transition ${
+                            isActive
+                              ? 'bg-violet-600 text-white shadow'
+                              : 'bg-slate-100 text-slate-700 hover:bg-violet-100 hover:text-violet-700'
+                          }`
+                        }
+                      >
+                        <Icon size={18} />
+                        {item.label}
+                      </NavLink>
+                    </motion.div>
+                  )
+                })}
               </nav>
             </div>
           </motion.aside>

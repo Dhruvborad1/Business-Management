@@ -27,6 +27,7 @@ function PartyForm({ setParties }) {
   })
 
   const [message, setMessage] = useState('')
+  const [messageTone, setMessageTone] = useState('info')
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -40,9 +41,10 @@ function PartyForm({ setParties }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!formData.partyName || !formData.shopName || !formData.gstNumber || 
-        !formData.pincode || !formData.mobileNumber || !formData.email || 
-        !formData.city || !formData.state) {
+    if (!formData.partyName || !formData.shopName || !formData.gstNumber ||
+      !formData.pincode || !formData.mobileNumber || !formData.email ||
+      !formData.city || !formData.state) {
+      setMessageTone('error')
       setMessage('Please fill all required fields.')
       return
     }
@@ -55,6 +57,7 @@ function PartyForm({ setParties }) {
       ...prev,
     ])
 
+    setMessageTone('success')
     setMessage('Party added successfully!')
     setFormData(emptyPartyForm)
   }
@@ -64,139 +67,143 @@ function PartyForm({ setParties }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="settings-form-container"
+      className="directory-form-container"
     >
-      <h2 className="settings-form-title">Party Details</h2>
-      <p className="settings-form-subtitle">Add new party/supplier information</p>
+      <h2 className="directory-form-title">Party Details</h2>
+      <p className="directory-form-subtitle">Add new party/supplier information</p>
 
-      {message && (
-        <div className="settings-form-message">
-          {message}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="settings-form">
-        <div className="settings-form-grid">
-          <div className="settings-form-group">
-            <label className="settings-form-label">Party Name *</label>
+      <form onSubmit={handleSubmit} className="directory-form">
+        <div className="directory-form-grid">
+          <div className="directory-form-group">
+            <label className="directory-form-label">Party Name *</label>
             <input
               type="text"
               name="partyName"
               value={formData.partyName}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter party name"
               required
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">Shop Name *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">Shop Name *</label>
             <input
               type="text"
               name="shopName"
               value={formData.shopName}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter shop name"
               required
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">GST Number *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">GST Number *</label>
             <input
               type="text"
               name="gstNumber"
               value={formData.gstNumber}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter GST number"
               required
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">Mobile Number *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">Mobile Number *</label>
             <input
               type="tel"
               name="mobileNumber"
               value={formData.mobileNumber}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter mobile number"
               required
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">Email *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">Email *</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter email address"
               required
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">Pincode *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">Pincode *</label>
             <input
               type="text"
               name="pincode"
               value={formData.pincode}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter pincode"
               required
             />
           </div>
 
-          <div className="settings-form-group full-width">
-            <label className="settings-form-label">Address</label>
+          <div className="directory-form-group full-width">
+            <label className="directory-form-label">Address</label>
             <textarea
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter address (optional)"
               rows="2"
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">City *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">City *</label>
             <input
               type="text"
               name="city"
               value={formData.city}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter city"
               required
             />
           </div>
 
-          <div className="settings-form-group">
-            <label className="settings-form-label">State *</label>
+          <div className="directory-form-group">
+            <label className="directory-form-label">State *</label>
             <input
               type="text"
               name="state"
               value={formData.state}
               onChange={handleChange}
-              className="settings-form-input"
+              className="directory-form-input"
               placeholder="Enter state"
               required
             />
           </div>
         </div>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <button
+            type="submit"
+            className="w-full sm:w-40 md:w-44 lg:w-48 h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+          >
+            Add Party
+          </button>
+        </div>
 
-        <button type="submit" className="settings-form-button">
-          Add Party
-        </button>
+        {message && (
+          <div className={`mt-3 rounded-xl border px-4 py-3 text-sm ${messageTone === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'}`}>
+            {message}
+          </div>
+        )}
       </form>
     </motion.div>
   )

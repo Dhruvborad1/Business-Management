@@ -32,7 +32,7 @@ function DashboardHome({ parties, challans, setChallans }) {
         }
     })
     const [formData, setFormData] = useState(() => createInitialForm(quantityTypes[0] || ''))
-    const [message, setMessage] = useState('Add challan details here for stock received from the market.')
+    const [message, setMessage] = useState('')
 
     const metrics = useMemo(() => {
         const totalOrders = challans.length
@@ -194,7 +194,7 @@ function DashboardHome({ parties, challans, setChallans }) {
                     onDeleteRow={handleDeleteRow}
                     onAddType={handleAddType}
                     onRemoveType={handleRemoveType}
-                    onAddParty={() => navigate('/settings')}
+                    onAddParty={() => navigate('/directory')}
                 />
                 <AnalyticsCharts monthlyData={monthlyData} />
             </section>

@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FiPlus, FiX } from 'react-icons/fi'
 import HeroSection from './HeroSection'
 import DataEntryForm from './DataEntryForm'
-import PartyForm from '../settings/PartyForm'
+import PartyForm from '../directory/PartyForm'
 import { createEmptyChallanRow, createInitialForm, defaultQuantityTypes } from '../data'
 import YourChalanForm from '../yourChalan/YourChalanForm'
+import YourBillForm from '../yourBill/YourBillForm'
 
 const capitalizeFirstCharacter = (value) => {
   if (!value) {
@@ -15,10 +17,13 @@ const capitalizeFirstCharacter = (value) => {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-function Settings({ parties, setParties, challans, setChallans, yourChalans, setYourChalans }) {
+function Directory({ parties, setParties, challans, setChallans, yourChalans, setYourChalans }) {
+  const location = useLocation()
   const [isPartyFormOpen, setIsPartyFormOpen] = useState(false)
   const [isChallanFormOpen, setIsChallanFormOpen] = useState(false)
   const [isYourChalanFormOpen, setIsYourChalanFormOpen] = useState(false)
+  const [isYourBillFormOpen, setIsYourBillFormOpen] = useState(false)
+  const [editingYourChalanId, setEditingYourChalanId] = useState(null)
   const [quantityTypes, setQuantityTypes] = useState(() => {
     const savedTypes = window.localStorage.getItem('riyafashion-quantity-types')
 
@@ -33,7 +38,7 @@ function Settings({ parties, setParties, challans, setChallans, yourChalans, set
     }
   })
   const [challanFormData, setChallanFormData] = useState(() => createInitialForm(quantityTypes[0] || ''))
-  const [challanMessage, setChallanMessage] = useState('Add challan details here for stock received from the market.')
+  const [challanMessage, setChallanMessage] = useState('')
 
   const handleRowChange = (rowId, name, value) => {
     const normalizedValue = name === 'challanNumber' ? capitalizeFirstCharacter(value) : value
@@ -50,6 +55,15 @@ function Settings({ parties, setParties, challans, setChallans, yourChalans, set
       rows: [...prev.rows, createEmptyChallanRow(quantityTypes[0] || '')],
     }))
   }
+
+  useEffect(() => {
+    if (!location.state?.openYourChalanForm) {
+      return
+    }
+
+    setIsYourChalanFormOpen(true)
+    setEditingYourChalanId(location.state.editYourChalanId || null)
+  }, [location.state])
 
   const handleDeleteRow = (rowId) => {
     setChallanFormData((prev) => {
@@ -201,7 +215,7 @@ function Settings({ parties, setParties, challans, setChallans, yourChalans, set
                 {isChallanFormOpen ? <FiX size={18} /> : <FiPlus size={18} />}
               </span>
               <div>
-                <h2 className="text-base font-semibold text-slate-900">Chalan Entry Form</h2>
+                <h2 className="text-base font-semibold text-slate-900">Party Chalan Entry Form</h2>
                 <p className="text-sm text-slate-500">Click to {isChallanFormOpen ? 'close' : 'open'} the form</p>
               </div>
             </div>
@@ -268,9 +282,49 @@ function Settings({ parties, setParties, challans, setChallans, yourChalans, set
                   <YourChalanForm
                     parties={parties}
                     quantityTypes={quantityTypes}
+                    challans={challans}
+                    setChallans={setChallans}
                     yourChalans={yourChalans}
                     setYourChalans={setYourChalans}
+                    editingYourChalanId={editingYourChalanId}
+                    onEditComplete={() => setEditingYourChalanId(null)}
                   />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <button
+            type="button"
+            onClick={() => setIsYourBillFormOpen((prev) => !prev)}
+            className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-slate-50 ${
+              isYourBillFormOpen ? 'rounded-t-2xl' : 'rounded-2xl'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-700">
+                {isYourBillFormOpen ? <FiX size={18} /> : <FiPlus size={18} />}
+              </span>
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">Generate Bill</h2>
+                <p className="text-sm text-slate-500">Click to {isYourBillFormOpen ? 'close' : 'open'} the bill form</p>
+              </div>
+            </div>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {isYourBillFormOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0, y: -16 }}
+                animate={{ height: 'auto', opacity: 1, y: 0 }}
+                exit={{ height: 0, opacity: 0, y: -16 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                className="overflow-hidden border-t border-slate-200"
+              >
+                <div className="p-4 pt-5">
+                  <YourBillForm parties={parties} yourChalans={yourChalans} />
                 </div>
               </motion.div>
             )}
@@ -281,4 +335,4 @@ function Settings({ parties, setParties, challans, setChallans, yourChalans, set
   )
 }
 
-export default Settings
+export default Directory

@@ -32,6 +32,8 @@ function PartyList({ parties, setParties }) {
 
   const [selectedPartyId, setSelectedPartyId] = useState(null)
 
+  const shouldEnableTableScroll = filteredParties.length > 10
+
   const selectedParty = useMemo(() => {
     if (filteredParties.length === 0) {
       return null
@@ -113,7 +115,7 @@ function PartyList({ parties, setParties }) {
     >
       <div className="party-list-header">
         <div>
-          <h2 className="party-list-title">Party List</h2>
+          <h2 className="party-list-title">Party Details</h2>
           <p className="party-list-subtitle">Search by party name and click any row to view full details.</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
@@ -132,10 +134,11 @@ function PartyList({ parties, setParties }) {
         />
       </div>
 
-      <div className="party-table-wrapper">
+      <div className={`party-table-wrapper${shouldEnableTableScroll ? ' party-table-wrapper-scroll' : ''}`}>
         <table className="party-table">
           <thead>
             <tr>
+              <th>#</th>
               <th>Party Name</th>
               <th>Shop Name</th>
               <th>GST Number</th>
@@ -156,6 +159,7 @@ function PartyList({ parties, setParties }) {
                 className={selectedParty?.id === party.id ? 'party-table-row-active' : ''}
                 onClick={() => setSelectedPartyId(party.id)}
               >
+                <td data-label="#">{index + 1}</td>
                 <td data-label="Party Name">{party.partyName}</td>
                 <td data-label="Shop Name">{party.shopName}</td>
                 <td data-label="GST Number">{party.gstNumber}</td>
