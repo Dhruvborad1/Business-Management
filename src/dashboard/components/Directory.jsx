@@ -1,7 +1,8 @@
+
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FiPlus, FiX } from 'react-icons/fi'
+import { FiPlus, FiX, FiUsers, FiFileText, FiFolderPlus, FiDollarSign, FiChevronDown } from 'react-icons/fi'
 import HeroSection from './HeroSection'
 import DataEntryForm from './DataEntryForm'
 import PartyForm from '../directory/PartyForm'
@@ -13,16 +14,14 @@ const capitalizeFirstCharacter = (value) => {
   if (!value) {
     return value
   }
-
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-function Directory({ parties, setParties, challans, setChallans, yourChalans, setYourChalans }) {
+function Directory({ parties, setParties, challans, setChallans, yourChalans, setYourChalans, billHistory, setBillHistory }) {
   const location = useLocation()
-  const [isPartyFormOpen, setIsPartyFormOpen] = useState(false)
-  const [isChallanFormOpen, setIsChallanFormOpen] = useState(false)
-  const [isYourChalanFormOpen, setIsYourChalanFormOpen] = useState(false)
-  const [isYourBillFormOpen, setIsYourBillFormOpen] = useState(false)
+
+  const [activeForm, setActiveForm] = useState(null) // 'party' | 'challan' | 'yourChalan' | 'yourBill' | null
+
   const [editingYourChalanId, setEditingYourChalanId] = useState(null)
   const [quantityTypes, setQuantityTypes] = useState(() => {
     const savedTypes = window.localStorage.getItem('riyafashion-quantity-types')
@@ -61,8 +60,16 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
       return
     }
 
-    setIsYourChalanFormOpen(true)
+    setActiveForm('yourChalan')
     setEditingYourChalanId(location.state.editYourChalanId || null)
+  }, [location.state])
+
+  useEffect(() => {
+    if (!location.state?.openYourBillForm) {
+      return
+    }
+
+    setActiveForm('yourBill')
   }, [location.state])
 
   const handleDeleteRow = (rowId) => {
@@ -155,184 +162,210 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
     setChallanFormData(createInitialForm(quantityTypes[0] || ''))
   }
 
+  // કાર્ડ્સ નો ડેટા
+  const cardsData = [
+    {
+      id: 'party',
+      title: 'Party Details Form',
+      desc: 'Add or edit party info',
+      icon: <FiUsers className="h-6 w-6 text-indigo-600" />,
+      component: <PartyForm setParties={setParties} />,
+    },
+    {
+      id: 'challan',
+      title: 'Party Chalan Entry',
+      desc: 'Create party challan entries',
+      icon: <FiFolderPlus className="h-6 w-6 text-emerald-600" />,
+      component: (
+        <DataEntryForm
+          formData={challanFormData}
+          message={challanMessage}
+          parties={parties}
+          quantityTypes={quantityTypes}
+          onRowChange={handleRowChange}
+          onSubmit={handleChallanSubmit}
+          onAddRow={handleAddRow}
+          onDeleteRow={handleDeleteRow}
+          onAddType={handleAddType}
+          onRemoveType={handleRemoveType}
+          onAddParty={() => setActiveForm('party')}
+        />
+      ),
+    },
+    {
+      id: 'yourChalan',
+      title: 'Your Chalan Form',
+      desc: 'Manage & create your chalans',
+      icon: <FiFileText className="h-6 w-6 text-blue-600" />,
+      component: (
+        <YourChalanForm
+          parties={parties}
+          quantityTypes={quantityTypes}
+          challans={challans}
+          setChallans={setChallans}
+          yourChalans={yourChalans}
+          setYourChalans={setYourChalans}
+          editingYourChalanId={editingYourChalanId}
+          onEditComplete={() => setEditingYourChalanId(null)}
+        />
+      ),
+    },
+    {
+      id: 'yourBill',
+      title: 'Generate Bill',
+      desc: 'Create billing and invoices',
+      icon: <FiDollarSign className="h-6 w-6 text-amber-600" />,
+      component: (
+        <YourBillForm
+          parties={parties}
+          yourChalans={yourChalans}
+          billHistory={billHistory}
+          setBillHistory={setBillHistory}
+        />
+      ),
+    },
+  ]
+
+  const activeCardData = cardsData.find((card) => card.id === activeForm)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex flex-col gap-4">
-
+      <div className="flex flex-col gap-6">
         {/* Hero Section */}
         <HeroSection />
 
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <button
-            type="button"
-            onClick={() => setIsPartyFormOpen((prev) => !prev)}
-            className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-slate-50 ${
-              isPartyFormOpen ? 'rounded-t-2xl' : 'rounded-2xl'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-700">
-                {isPartyFormOpen ? <FiX size={18} /> : <FiPlus size={18} />}
-              </span>
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">Party Details Form</h2>
-                <p className="text-sm text-slate-500">Click to {isPartyFormOpen ? 'close' : 'open'} the form</p>
-              </div>
-            </div>
-          </button>
+        {/* ========================================================= */}
+        {/* 1. MOBILE VIEW: ઊભી પટ્ટી વાળી ડિઝાઇન (માત્ર મોબાઇલમાં જ દેખાશે) */}
+        {/* ========================================================= */}
+        <div className="flex flex-col gap-4 md:hidden">
+          {cardsData.map((card) => {
+            const isOpen = activeForm === card.id
+            return (
+              <section key={card.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setActiveForm(isOpen ? null : card.id)}
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-slate-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-700">
+                      {isOpen ? <FiX size={18} /> : <FiPlus size={18} />}
+                    </span>
+                    <div>
+                      <h2 className="text-base font-semibold text-slate-900">{card.title}</h2>
+                      <p className="text-sm text-slate-500">Click to {isOpen ? 'close' : 'open'}</p>
+                    </div>
+                  </div>
+                </button>
 
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: 'easeInOut' }}
+                      className="border-t border-slate-200 p-4 overflow-hidden"
+                    >
+                      {card.component}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </section>
+            )
+          })}
+        </div>
+
+        {/* ========================================================= */}
+        {/* 2. DESKTOP VIEW: 4 કાર્ડ્સ ગ્રીડ + તેની નીચે જ ફોર્મ એનિમેશન સાથે ખુલશે */}
+        {/* ========================================================= */}
+        <div className="hidden flex-col gap-6 md:flex">
+          {/* Top 4 Grid Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+            {cardsData.map((card) => {
+              const isActive = activeForm === card.id
+              return (
+                <button
+                  key={card.id}
+                  type="button"
+                  onClick={() => setActiveForm(isActive ? null : card.id)}
+                  className={`relative text-left rounded-2xl border p-5 transition-all duration-300 flex flex-col justify-between ${isActive
+                      ? 'border-indigo-600 bg-indigo-50/40 shadow-md ring-2 ring-indigo-500/20'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
+                    }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
+                        {card.icon}
+                      </span>
+                      <motion.div
+                        animate={{ rotate: isActive ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="text-slate-400"
+                      >
+                        <FiChevronDown size={20} />
+                      </motion.div>
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900">{card.title}</h3>
+                    <p className="mt-1 text-xs text-slate-500">{card.desc}</p>
+                  </div>
+
+                  <div className="mt-4 text-xs font-semibold text-indigo-600">
+                    {isActive ? 'Click to hide' : 'Click to open form'}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Expanded Form Below Grid */}
           <AnimatePresence initial={false}>
-            {isPartyFormOpen && (
+            {activeCardData && (
               <motion.div
-                initial={{ height: 0, opacity: 0, y: -16 }}
+                key={activeCardData.id}
+                initial={{ height: 0, opacity: 0, y: -10 }}
                 animate={{ height: 'auto', opacity: 1, y: 0 }}
-                exit={{ height: 0, opacity: 0, y: -16 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className="overflow-hidden border-t border-slate-200"
+                exit={{ height: 0, opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md"
               >
-                <div className="p-4 pt-5">
-                  <PartyForm setParties={setParties} />
+                {/* Form Header */}
+                <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-slate-50/60">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-slate-200 shadow-sm">
+                      {activeCardData.icon}
+                    </span>
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900">{activeCardData.title}</h2>
+                      <p className="text-xs text-slate-500">{activeCardData.desc}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveForm(null)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 transition"
+                  >
+                    <FiX size={16} /> Close
+                  </button>
+                </div>
+
+                {/* Form Content */}
+                <div className="p-6">
+                  {activeCardData.component}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-        </section>
+        </div>
 
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <button
-            type="button"
-            onClick={() => setIsChallanFormOpen((prev) => !prev)}
-            className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-slate-50 ${
-              isChallanFormOpen ? 'rounded-t-2xl' : 'rounded-2xl'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-700">
-                {isChallanFormOpen ? <FiX size={18} /> : <FiPlus size={18} />}
-              </span>
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">Party Chalan Entry Form</h2>
-                <p className="text-sm text-slate-500">Click to {isChallanFormOpen ? 'close' : 'open'} the form</p>
-              </div>
-            </div>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {isChallanFormOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0, y: -16 }}
-                animate={{ height: 'auto', opacity: 1, y: 0 }}
-                exit={{ height: 0, opacity: 0, y: -16 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className="overflow-hidden border-t border-slate-200"
-              >
-                <div className="p-4 pt-5">
-                  <DataEntryForm
-                    formData={challanFormData}
-                    message={challanMessage}
-                    parties={parties}
-                    quantityTypes={quantityTypes}
-                    onRowChange={handleRowChange}
-                    onSubmit={handleChallanSubmit}
-                    onAddRow={handleAddRow}
-                    onDeleteRow={handleDeleteRow}
-                    onAddType={handleAddType}
-                    onRemoveType={handleRemoveType}
-                    onAddParty={() => setIsPartyFormOpen(true)}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
-
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <button
-            type="button"
-            onClick={() => setIsYourChalanFormOpen((prev) => !prev)}
-            className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-slate-50 ${
-              isYourChalanFormOpen ? 'rounded-t-2xl' : 'rounded-2xl'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-700">
-                {isYourChalanFormOpen ? <FiX size={18} /> : <FiPlus size={18} />}
-              </span>
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">Your Chalan Form</h2>
-                <p className="text-sm text-slate-500">Click to {isYourChalanFormOpen ? 'close' : 'open'} the form</p>
-              </div>
-            </div>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {isYourChalanFormOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0, y: -16 }}
-                animate={{ height: 'auto', opacity: 1, y: 0 }}
-                exit={{ height: 0, opacity: 0, y: -16 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className="overflow-hidden border-t border-slate-200"
-              >
-                <div className="p-4 pt-5">
-                  <YourChalanForm
-                    parties={parties}
-                    quantityTypes={quantityTypes}
-                    challans={challans}
-                    setChallans={setChallans}
-                    yourChalans={yourChalans}
-                    setYourChalans={setYourChalans}
-                    editingYourChalanId={editingYourChalanId}
-                    onEditComplete={() => setEditingYourChalanId(null)}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
-
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <button
-            type="button"
-            onClick={() => setIsYourBillFormOpen((prev) => !prev)}
-            className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition hover:bg-slate-50 ${
-              isYourBillFormOpen ? 'rounded-t-2xl' : 'rounded-2xl'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-700">
-                {isYourBillFormOpen ? <FiX size={18} /> : <FiPlus size={18} />}
-              </span>
-              <div>
-                <h2 className="text-base font-semibold text-slate-900">Generate Bill</h2>
-                <p className="text-sm text-slate-500">Click to {isYourBillFormOpen ? 'close' : 'open'} the bill form</p>
-              </div>
-            </div>
-          </button>
-
-          <AnimatePresence initial={false}>
-            {isYourBillFormOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0, y: -16 }}
-                animate={{ height: 'auto', opacity: 1, y: 0 }}
-                exit={{ height: 0, opacity: 0, y: -16 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
-                className="overflow-hidden border-t border-slate-200"
-              >
-                <div className="p-4 pt-5">
-                  <YourBillForm parties={parties} yourChalans={yourChalans} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
       </div>
     </motion.div>
   )
 }
 
-export default Directory
+export default Directory  

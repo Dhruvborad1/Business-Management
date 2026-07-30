@@ -155,6 +155,12 @@ function DashboardHeader() {
                     >
                       Your Chalan Detail
                     </button>
+                    <button
+                      onClick={() => openReportView('bill-history')}
+                      className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-violet-100 hover:text-violet-700"
+                    >
+                      Bill History
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -285,6 +291,12 @@ function DashboardHeader() {
                         className="mt-1 block w-full rounded-lg bg-slate-50 px-4 py-2 text-left text-sm text-slate-700 hover:bg-violet-100 hover:text-violet-700"
                       >
                         Your Chalan Detail
+                      </button>
+                      <button
+                        onClick={() => openReportView('bill-history')}
+                        className="mt-1 block w-full rounded-lg bg-slate-50 px-4 py-2 text-left text-sm text-slate-700 hover:bg-violet-100 hover:text-violet-700"
+                      >
+                        Bill History
                       </button>
                     </motion.div>
                   )}

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createInitialBillForm, getBillTotals } from './yourBillUtils'
+import { createInitialBillForm, getBillTotals, validateBillForm } from './yourBillUtils'
 import YourBillPreview from './YourBillPreview'
+import { createBillHistoryRecord } from './billHistoryStorage'
 
 const inputClass = 'h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100'
 
-function YourBillForm({ parties = [], yourChalans = [] }) {
+function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBillHistory }) {
   const [formData, setFormData] = useState(createInitialBillForm)
   const [message, setMessage] = useState('Fill the form and generate your bill preview.')
   const [messageTone, setMessageTone] = useState('info')
@@ -43,7 +44,7 @@ function YourBillForm({ parties = [], yourChalans = [] }) {
       return values[0]
     }
 
-    return challan?.inwardChNo || challan?.inwardChallanNumber || challan?.chalanNumber || '-'
+    return chalan?.inwardChNo || chalan?.inwardChallanNumber || chalan?.chalanNumber || '-'
   }
 
   const buildRowsFromChalans = (challanIds) => {
@@ -65,7 +66,7 @@ function YourBillForm({ parties = [], yourChalans = [] }) {
         rate: row.rate || '',
         sourceChallanId: chalan.id,
         sourceChallanNumber: chalan.chalanNumber,
-        inwardChNo: getInwardChallanNumber(chalan),
+        inwardChNo: row?.inwardChallanNumber || row?.inwardChNo || row?.inwardChallanNo || getInwardChallanNumber(chalan),
         issueChNo: chalan?.chalanNumber || chalan?.issueChNo || chalan?.issueChallanNumber || '-',
       })),
     )
@@ -73,7 +74,9 @@ function YourBillForm({ parties = [], yourChalans = [] }) {
 
   useEffect(() => {
     if (!formData.partyId) {
-      setSelectedChallanIds([])
+      if (selectedChallanIds.length > 0) {
+        setSelectedChallanIds([])
+      }
       return
     }
 
@@ -97,16 +100,32 @@ function YourBillForm({ parties = [], yourChalans = [] }) {
   const handleSubmit = (event) => {
     event.preventDefault()
 
-    const hasEmptyRequiredField = !formData.partyName || !formData.billNumber || !formData.billDate || formData.rows.some((row) => !row.description || (!row.plain && !row.short && !row.work && !row.sample) || !row.rate)
+    const validation = validateBillForm(formData)
 
-    if (hasEmptyRequiredField) {
+    if (!validation.isValid) {
       setMessageTone('error')
-      setMessage('Please fill party name, bill number, bill date, row details, and rate.')
+      setMessage(`Please fill the following fields: ${validation.missingFields.join(', ')}.`)
       return
     }
 
+    const record = createBillHistoryRecord({
+      ...formData,
+      partyId: formData.partyId,
+      partyName: formData.partyName,
+      billNumber: formData.billNumber,
+      billDate: formData.billDate,
+      rows: formData.rows,
+      rawBill: formData,
+    })
+
+    setBillHistory?.([record, ...billHistory])
     setMessageTone('success')
-    setMessage('Bill preview is ready.')
+    setMessage('Bill saved to Bill History.')
+
+    // Reset Form Fields after successful submission
+    setFormData(createInitialBillForm)
+    setSelectedChallanIds([])
+    setPartySearch('')
   }
 
   return (
@@ -239,15 +258,15 @@ function YourBillForm({ parties = [], yourChalans = [] }) {
           </label>
           <label className="lg:col-span-2">
             <span className="mb-1 block text-sm font-medium text-slate-700">Discount %</span>
-            <input type="number" min="0" value={formData.discountPercent} onChange={(event) => updateField('discountPercent', event.target.value)} className={inputClass} placeholder="0" />
+            <input type="number" inputMode="decimal" min="0" step="0.01" value={formData.discountPercent} onChange={(event) => updateField('discountPercent', event.target.value)} className={inputClass} placeholder="0.00" />
           </label>
           <label className="lg:col-span-2">
             <span className="mb-1 block text-sm font-medium text-slate-700">CGST %</span>
-            <input type="number" min="0" value={formData.cgstPercent} onChange={(event) => updateField('cgstPercent', event.target.value)} className={inputClass} placeholder="0" />
+            <input type="number" inputMode="decimal" min="0" step="0.01" value={formData.cgstPercent} onChange={(event) => updateField('cgstPercent', event.target.value)} className={inputClass} placeholder="0.00" />
           </label>
           <label className="lg:col-span-2">
             <span className="mb-1 block text-sm font-medium text-slate-700">SGST %</span>
-            <input type="number" min="0" value={formData.sgstPercent} onChange={(event) => updateField('sgstPercent', event.target.value)} className={inputClass} placeholder="0" />
+            <input type="number" inputMode="decimal" min="0" step="0.01" value={formData.sgstPercent} onChange={(event) => updateField('sgstPercent', event.target.value)} className={inputClass} placeholder="0.00" />
           </label>
         </div>
 
@@ -362,4 +381,3 @@ function YourBillForm({ parties = [], yourChalans = [] }) {
 }
 
 export default YourBillForm
-

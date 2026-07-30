@@ -6,11 +6,13 @@ import HeroSection from './HeroSection'
 import PartyList from '../directory/PartyList'
 import { formatDisplayDate } from '../utils/formatDate'
 import YourChalanReport from '../yourChalan/YourChalanReport'
+import YourBillReport from '../yourBill/YourBillReport'
 
 const reportTabs = [
   { id: 'party', label: 'Party Details' },
   { id: 'challan', label: 'Party Challan Details' },
   { id: 'your-chalan', label: 'Your Chalan Detail' },
+  { id: 'bill-history', label: 'Bill History' },
 ]
 
 const createEditableChallan = (challan) => ({
@@ -20,7 +22,7 @@ const createEditableChallan = (challan) => ({
   challanDate: challan.challanDate || '',
 })
 
-function Reports({ parties, setParties, challans, setChallans, yourChalans, setYourChalans }) {
+function Reports({ parties, setParties, challans, setChallans, yourChalans, setYourChalans, billHistory = [], setBillHistory }) {
   const location = useLocation()
   const navigate = useNavigate()
   const initialTab = reportTabs.some((tab) => tab.id === location.state?.reportView) ? location.state.reportView : 'party'
@@ -32,7 +34,6 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
   const [selectedFilterPartyId, setSelectedFilterPartyId] = useState('all')
   const [isPartyFilterOpen, setIsPartyFilterOpen] = useState(false)
   const [partyFilterSearch, setPartyFilterSearch] = useState('')
-
   useEffect(() => {
     if (reportTabs.some((tab) => tab.id === location.state?.reportView)) {
       setActiveTab(location.state.reportView)
@@ -203,6 +204,16 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
             >
               <YourChalanReport yourChalans={yourChalans} setYourChalans={setYourChalans} />
             </motion.div>
+          ) : activeTab === 'bill-history' ? (
+            <motion.div
+              key="bill-history-details"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+            >
+              <YourBillReport billHistory={billHistory} setBillHistory={setBillHistory} />
+            </motion.div>
           ) : (
             <motion.section
               key="challan-details"
@@ -254,8 +265,8 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                               setIsPartyFilterOpen(false)
                             }}
                             className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedFilterPartyId === 'all'
-                                ? 'bg-violet-50 text-violet-700'
-                                : 'text-slate-700 hover:bg-violet-50'
+                              ? 'bg-violet-50 text-violet-700'
+                              : 'text-slate-700 hover:bg-violet-50'
                               }`}
                           >
                             <span>All Parties</span>
@@ -276,8 +287,8 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                                   setIsPartyFilterOpen(false)
                                 }}
                                 className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedFilterPartyId === party.id
-                                    ? 'bg-violet-50 text-violet-700'
-                                    : 'text-slate-700 hover:bg-violet-50'
+                                  ? 'bg-violet-50 text-violet-700'
+                                  : 'text-slate-700 hover:bg-violet-50'
                                   }`}
                               >
                                 <span>{party.partyName}</span>
@@ -317,8 +328,8 @@ function Reports({ parties, setParties, challans, setChallans, yourChalans, setY
                             key={challan.id}
                             onClick={() => setSelectedChallanId(challan.id)}
                             className={`cursor-pointer border-t border-slate-200 transition ${selectedChallanId === challan.id
-                                ? 'bg-violet-50 text-violet-900'
-                                : 'text-slate-700 hover:bg-slate-50'
+                              ? 'bg-violet-50 text-violet-900'
+                              : 'text-slate-700 hover:bg-slate-50'
                               }`}
                           >
                             <td className="px-4 py-3 font-medium">{index + 1}</td>

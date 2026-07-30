@@ -55,3 +55,44 @@ export const getBillTotals = (rows = []) =>
     }),
     { plain: 0, short: 0, work: 0, sample: 0, quantity: 0, amount: 0 },
   )
+
+export const validateBillForm = (formData = {}) => {
+  const missingFields = []
+
+  if (!String(formData.partyName || '').trim()) {
+    missingFields.push('Party Name')
+  }
+
+  if (!String(formData.partyAddress || '').trim()) {
+    missingFields.push('Party Address')
+  }
+
+  if (!String(formData.partyMobile || '').trim()) {
+    missingFields.push('Party Mobile')
+  }
+
+  if (!String(formData.partyGstin || '').trim()) {
+    missingFields.push('Party GSTIN NO')
+  }
+
+  if (!String(formData.discountPercent ?? '').trim()) {
+    missingFields.push('Discount %')
+  }
+
+  if (!String(formData.cgstPercent ?? '').trim()) {
+    missingFields.push('CGST %')
+  }
+
+  if (!String(formData.sgstPercent ?? '').trim()) {
+    missingFields.push('SGST %')
+  }
+
+  if (!Array.isArray(formData.rows) || formData.rows.length === 0) {
+    missingFields.push('Party Challans')
+  }
+
+  return {
+    isValid: missingFields.length === 0,
+    missingFields,
+  }
+}

@@ -66,6 +66,24 @@ function App() {
     window.localStorage.setItem('riyafashion-your-chalans', JSON.stringify(yourChalans))
   }, [yourChalans])
 
+  const [billHistory, setBillHistory] = useState(() => {
+    const savedBills = window.localStorage.getItem('riyafashion-bill-history')
+
+    if (!savedBills) {
+      return []
+    }
+
+    try {
+      return JSON.parse(savedBills)
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem('riyafashion-bill-history', JSON.stringify(billHistory))
+  }, [billHistory])
+
   return (
     <BrowserRouter>
       <main className="min-h-screen w-full bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-100">
@@ -77,8 +95,8 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/inventory" element={<Inventory />} />
               <Route path="/customers" element={<Customers />} />
-              <Route path="/reports" element={<Reports parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} />} />
-              <Route path="/directory" element={<Directory parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} />} />
+              <Route path="/reports" element={<Reports parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} billHistory={billHistory} setBillHistory={setBillHistory} />} />
+              <Route path="/directory" element={<Directory parties={parties} setParties={setParties} challans={challans} setChallans={setChallans} yourChalans={yourChalans} setYourChalans={setYourChalans} billHistory={billHistory} setBillHistory={setBillHistory} />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/user" element={<User />} />
             </Routes>
