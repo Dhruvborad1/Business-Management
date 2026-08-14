@@ -56,7 +56,7 @@ const contactInfo = [
 
 function WebMateFooter() {
   return (
-    <footer className="mt-auto bg-black text-white">
+    <footer className="mt-auto bg-black text-white print:hidden">
       {/* Main Footer Content */}
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">

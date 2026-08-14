@@ -75,7 +75,7 @@ function DashboardHeader() {
   }
 
   return (
-    <motion.header className="sticky top-0 z-50 w-full shadow-2xl" initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+    <motion.header className="sticky top-0 z-50 w-full shadow-2xl print:hidden" initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
       <div className={`border-b border-slate-200 px-4 py-2 text-xs text-slate-600 transition-all duration-300 ${
         isScrolled ? 'bg-slate-100/75 backdrop-blur-md' : 'bg-slate-100'
       }`}>

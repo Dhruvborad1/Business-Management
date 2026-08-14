@@ -679,9 +679,9 @@ function YourChalanReport({ yourChalans, setYourChalans }) {
 
   return (
     <>
-      <section className="relative grid grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+      <section className="relative grid grid-cols-1 gap-4 xl:grid-cols-[360px_minmax(0,1fr)] print:block">
         {/* Left Side Sidebar */}
-        <div className="hidden xl:flex h-[calc(100vh-4rem)] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="hidden xl:flex h-[calc(100vh-4rem)] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm print:hidden">
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Your Chalan Detail</h2>
@@ -698,8 +698,8 @@ function YourChalanReport({ yourChalans, setYourChalans }) {
         </div>
 
         {/* Right Side Preview Container */}
-        <div className="flex h-[calc(100vh-4rem)] flex-col rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 shadow-sm">
-          <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div className="flex h-[calc(100vh-4rem)] flex-col rounded-2xl border border-slate-200 bg-white p-3 sm:p-5 shadow-sm print:h-auto print:p-0 print:border-none print:shadow-none print:bg-transparent">
+          <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 print:hidden">
             <div>
               <h3 className="text-base sm:text-lg font-semibold text-slate-900">Selected Your Chalan</h3>
               <p className="mt-0.5 text-xs sm:text-sm text-slate-500">Preview matches the challan format.</p>
@@ -764,7 +764,7 @@ function YourChalanReport({ yourChalans, setYourChalans }) {
           {/* Fixed Overflow Container for Zooming without Left-side Clippings */}
           <div
             ref={previewContainerRef}
-            className={`flex-1 overflow-auto p-2 sm:p-4 bg-slate-50/50 rounded-xl border border-slate-100 ${customScrollbarClass}`}
+            className={`flex-1 overflow-auto p-2 sm:p-4 bg-slate-50/50 rounded-xl border border-slate-100 print:p-0 print:border-none print:bg-transparent print:overflow-visible ${customScrollbarClass}`}
           >
             {selectedChalan ? (
               <div className="print-area min-h-full min-w-full w-max flex justify-center items-start">
@@ -788,7 +788,7 @@ function YourChalanReport({ yourChalans, setYourChalans }) {
       </section>
 
       {/* Floating Bottom Pill Button (< 1280px / xl) */}
-      <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-4 xl:hidden pointer-events-none">
+      <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-4 xl:hidden pointer-events-none print:hidden">
         <AnimatePresence>
           {!isDrawerOpen && (
             <motion.button

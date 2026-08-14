@@ -404,7 +404,7 @@ export default function HeroSection({ breadcrumbItems }) {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-2xl bg-[url('https://www.weavetech.com/wp-content/uploads/2023/12/Types_of_Embroidery_Machines_and_their_Functions.jpg')] bg-cover bg-center min-h-[480px] flex items-center justify-center p-6]"
+      className="relative overflow-hidden rounded-2xl bg-[url('https://www.weavetech.com/wp-content/uploads/2023/12/Types_of_Embroidery_Machines_and_their_Functions.jpg')] bg-cover bg-center min-h-[480px] flex items-center justify-center p-6 print:hidden"
     >
       {/* ફેરફાર ૧: ઓવરલે ને વધારે ડાર્ક (bg-black/70) કર્યો જેથી પાછળનું બેકગ્રાઉન્ડ ડાર્ક લાગે */}
       <div className="absolute inset-0 bg-black/70 pointer-events-none" />
