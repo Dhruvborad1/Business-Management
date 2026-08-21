@@ -123,10 +123,14 @@ function YourChalanPreview({ chalan }) {
               size: A4 portrait;
               margin: 8mm 5mm;
             }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
           }
         `}
       </style>
-      
+
       {/* SCREEN VIEW */}
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white p-3 print:hidden">
         <ChalanDocument
@@ -138,8 +142,8 @@ function YourChalanPreview({ chalan }) {
       {/* PRINT VIEW - Iterates chunks (pages), 2 copies per page */}
       <div className="hidden print:block print:w-full">
         {rowChunks.map((chunk, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className="print:flex print:flex-col print:justify-start print:w-full print:gap-4 print:page-break-after-always"
           >
             {/* First Copy (Original) */}

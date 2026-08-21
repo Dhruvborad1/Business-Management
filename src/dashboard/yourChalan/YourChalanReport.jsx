@@ -600,6 +600,23 @@ function YourChalanReport({ yourChalans, setYourChalans }) {
     setIsDrawerOpen(false)
   }
 
+  const handlePrint = () => {
+    if (selectedChalan) {
+      const originalTitle = document.title
+      const companyName = selectedChalan.companyName || 'Header Name'
+      const chalanNo = selectedChalan.chalanNumber || ''
+      document.title = `${companyName} ${chalanNo}`.trim()
+      
+      window.print()
+      
+      setTimeout(() => {
+        document.title = originalTitle
+      }, 100)
+    } else {
+      window.print()
+    }
+  }
+
   const renderPartyList = (isDrawer = false) => {
     const groups = isDrawer ? filteredPartyGroups : partyGroups
 
@@ -732,7 +749,7 @@ function YourChalanReport({ yourChalans, setYourChalans }) {
                 {/* Print Button */}
                 <button
                   type="button"
-                  onClick={() => window.print()}
+                  onClick={handlePrint}
                   className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                 >
                   Print
