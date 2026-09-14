@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { createInitialBillForm, getBillTotals, validateBillForm } from './yourBillUtils'
+import { createInitialBillForm, getBillTotals, validateBillForm, generateNextBillNumber } from './yourBillUtils'
 import YourBillPreview from './YourBillPreview'
 import { createBillHistoryRecord } from './billHistoryStorage'
 
@@ -13,6 +13,15 @@ function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBil
   const [isPartyMenuOpen, setIsPartyMenuOpen] = useState(false)
   const [selectedChallanIds, setSelectedChallanIds] = useState([])
   const totals = useMemo(() => getBillTotals(formData.rows), [formData.rows])
+
+  useEffect(() => {
+    if (formData.billNumber === '') {
+      setFormData((prev) => ({
+        ...prev,
+        billNumber: generateNextBillNumber(billHistory),
+      }))
+    }
+  }, [billHistory, formData.billNumber])
 
   const filteredParties = useMemo(() => {
     const normalizedSearch = partySearch.trim().toLowerCase()

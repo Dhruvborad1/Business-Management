@@ -113,7 +113,7 @@ function YourBillPreview({ bill }) {
               <div className="border-l border-black text-xs">
                 <div className="grid grid-cols-[80px_1fr] border-b border-black px-3 py-1">
                   <div>BILL No</div>
-                  <div className="font-medium">: {bill?.billNumber || '2/26-27'}</div>
+                  <div className="font-medium">: {bill?.billNumber || '—'}</div>
                 </div>
                 <div className="grid grid-cols-[80px_1fr] border-b border-black px-3 py-1">
                   <div>Date</div>

@@ -96,3 +96,40 @@ export const validateBillForm = (formData = {}) => {
     missingFields,
   }
 }
+
+export const getFinancialYearStr = (date = new Date()) => {
+  const year = date.getFullYear()
+  const month = date.getMonth() // 0-indexed, so 0 is Jan, 3 is Apr
+
+  let startYear, endYear
+  if (month >= 3) {
+    startYear = year
+    endYear = year + 1
+  } else {
+    startYear = year - 1
+    endYear = year
+  }
+
+  const startYearStr = startYear.toString().slice(-2)
+  const endYearStr = endYear.toString().slice(-2)
+  return `${startYearStr}-${endYearStr}`
+}
+
+export const generateNextBillNumber = (billHistory = []) => {
+  const currentFyStr = getFinancialYearStr()
+  
+  const currentFyBills = billHistory.filter(bill => {
+    return bill.billNumber && String(bill.billNumber).endsWith(`/${currentFyStr}`)
+  })
+
+  let maxNumber = 0
+  for (const bill of currentFyBills) {
+    const numPart = String(bill.billNumber).split('/')[0]
+    const num = parseInt(numPart, 10)
+    if (!isNaN(num) && num > maxNumber) {
+      maxNumber = num
+    }
+  }
+
+  return `${maxNumber + 1}/${currentFyStr}`
+}
