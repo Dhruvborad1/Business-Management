@@ -23,6 +23,7 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
   const [activeForm, setActiveForm] = useState(null) // 'party' | 'challan' | 'yourChalan' | 'yourBill' | null
 
   const [editingYourChalanId, setEditingYourChalanId] = useState(null)
+  const [editingYourBillId, setEditingYourBillId] = useState(null)
   const [quantityTypes, setQuantityTypes] = useState(() => {
     const savedTypes = window.localStorage.getItem('riyafashion-quantity-types')
 
@@ -70,6 +71,7 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
     }
 
     setActiveForm('yourBill')
+    setEditingYourBillId(location.state.editYourBillId || null)
   }, [location.state])
 
   const handleDeleteRow = (rowId) => {
@@ -169,7 +171,7 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
       title: 'Party Details Form',
       desc: 'Add or edit party info',
       icon: <FiUsers className="h-6 w-6 text-indigo-600" />,
-      component: <PartyForm setParties={setParties} />,
+      component: <PartyForm setParties={setParties} onCancel={() => setActiveForm(null)} />,
     },
     {
       id: 'challan',
@@ -189,6 +191,7 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
           onAddType={handleAddType}
           onRemoveType={handleRemoveType}
           onAddParty={() => setActiveForm('party')}
+          onCancel={() => setActiveForm(null)}
         />
       ),
     },
@@ -207,6 +210,7 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
           setYourChalans={setYourChalans}
           editingYourChalanId={editingYourChalanId}
           onEditComplete={() => setEditingYourChalanId(null)}
+          onCancel={() => setActiveForm(null)}
         />
       ),
     },
@@ -221,6 +225,9 @@ function Directory({ parties, setParties, challans, setChallans, yourChalans, se
           yourChalans={yourChalans}
           billHistory={billHistory}
           setBillHistory={setBillHistory}
+          editingYourBillId={editingYourBillId}
+          onEditComplete={() => setEditingYourBillId(null)}
+          onCancel={() => { setActiveForm(null); setEditingYourBillId(null); }}
         />
       ),
     },

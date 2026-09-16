@@ -178,6 +178,11 @@ function DashboardHome({ parties, challans, setChallans }) {
         setFormData(createInitialForm(quantityTypes[0] || ''))
     }
 
+    const handleCancel = () => {
+        setFormData(createInitialForm(quantityTypes[0] || ''))
+        setMessage('')
+    }
+
     return (
         <>
             <StatsCards metrics={metrics} />
@@ -195,6 +200,7 @@ function DashboardHome({ parties, challans, setChallans }) {
                     onAddType={handleAddType}
                     onRemoveType={handleRemoveType}
                     onAddParty={() => navigate('/directory')}
+                    onCancel={handleCancel}
                 />
                 <AnalyticsCharts monthlyData={monthlyData} />
             </section>

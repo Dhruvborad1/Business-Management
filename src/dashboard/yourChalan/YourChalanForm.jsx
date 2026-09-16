@@ -30,7 +30,7 @@ const getChallanKeys = (challan) => [
   `party:${challan.partyId}:number:${challan.challanNumber}`,
 ]
 
-function YourChalanForm({ parties, quantityTypes = [], challans = [], setChallans, yourChalans, setYourChalans, editingYourChalanId, onEditComplete }) {
+function YourChalanForm({ parties, quantityTypes = [], challans = [], setChallans, yourChalans, setYourChalans, editingYourChalanId, onEditComplete, onCancel }) {
   const [formData, setFormData] = useState(() => createInitialYourChalanForm(yourChalans))
   const [message, setMessage] = useState('Create your company challan to send to party.')
   const [messageTone, setMessageTone] = useState('info')
@@ -645,9 +645,14 @@ function YourChalanForm({ parties, quantityTypes = [], challans = [], setChallan
             Add Row
           </button>
           <div className="text-sm font-semibold text-slate-700">Total Pcs. {totals.totalPieces} | Gross Amount {totals.amount.toFixed(2)}</div>
-          <button type="submit" className="h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-xl">
-            {isEditMode ? 'Update Your Chalan' : 'Save Your Chalan'}
-          </button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button type="button" onClick={onCancel} className="h-11 w-full sm:w-auto rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+              Cancel
+            </button>
+            <button type="submit" className="h-11 w-full sm:w-auto rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-xl">
+              {isEditMode ? 'Update Your Chalan' : 'Save Your Chalan'}
+            </button>
+          </div>
         </div>
 
         <div className={`mt-3 rounded-xl border px-4 py-3 text-sm ${messageTone === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : messageTone === 'error' ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>

@@ -21,7 +21,7 @@ const capitalizeFirstCharacter = (value) => {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-function PartyForm({ setParties }) {
+function PartyForm({ setParties, onCancel }) {
   const [formData, setFormData] = useState({
     ...emptyPartyForm,
   })
@@ -191,6 +191,13 @@ function PartyForm({ setParties }) {
           </div>
         </div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-full sm:w-40 md:w-44 lg:w-48 h-11 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate-50"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             className="w-full sm:w-40 md:w-44 lg:w-48 h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"

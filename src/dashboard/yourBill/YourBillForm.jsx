@@ -5,7 +5,7 @@ import { createBillHistoryRecord } from './billHistoryStorage'
 
 const inputClass = 'h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-100'
 
-function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBillHistory }) {
+function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBillHistory, editingYourBillId, onEditComplete, onCancel }) {
   const [formData, setFormData] = useState(createInitialBillForm)
   const [message, setMessage] = useState('Fill the form and generate your bill preview.')
   const [messageTone, setMessageTone] = useState('info')
@@ -14,14 +14,36 @@ function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBil
   const [selectedChallanIds, setSelectedChallanIds] = useState([])
   const totals = useMemo(() => getBillTotals(formData.rows), [formData.rows])
 
+  const isEditMode = Boolean(editingYourBillId)
+
   useEffect(() => {
+    if (isEditMode && formData.billNumber === '') {
+      return
+    }
+
     if (formData.billNumber === '') {
       setFormData((prev) => ({
         ...prev,
         billNumber: generateNextBillNumber(billHistory),
       }))
     }
-  }, [billHistory, formData.billNumber])
+  }, [billHistory, formData.billNumber, isEditMode])
+
+  useEffect(() => {
+    if (!editingYourBillId) {
+      return
+    }
+
+    const existingBill = billHistory.find((bill) => bill.id === editingYourBillId)
+    if (existingBill) {
+      const raw = existingBill.rawBill || existingBill
+      setFormData(raw)
+      if (raw.rows) {
+        const challanIds = raw.rows.map((r) => r.sourceChallanId).filter(Boolean)
+        setSelectedChallanIds([...new Set(challanIds)])
+      }
+    }
+  }, [editingYourBillId, billHistory])
 
   const filteredParties = useMemo(() => {
     const normalizedSearch = partySearch.trim().toLowerCase()
@@ -119,6 +141,7 @@ function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBil
 
     const record = createBillHistoryRecord({
       ...formData,
+      id: isEditMode ? editingYourBillId : crypto.randomUUID(),
       partyId: formData.partyId,
       partyName: formData.partyName,
       billNumber: formData.billNumber,
@@ -127,14 +150,29 @@ function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBil
       rawBill: formData,
     })
 
-    setBillHistory?.([record, ...billHistory])
-    setMessageTone('success')
-    setMessage('Bill saved to Bill History.')
+    if (isEditMode) {
+      record.createdAt = billHistory.find(b => b.id === editingYourBillId)?.createdAt || record.createdAt
+      setBillHistory?.((prev) => prev.map((b) => (b.id === editingYourBillId ? record : b)))
+      setMessageTone('success')
+      setMessage(`Bill no. ${record.billNumber} updated successfully.`)
+      
+      setFormData(createInitialBillForm)
+      setSelectedChallanIds([])
+      setPartySearch('')
 
-    // Reset Form Fields after successful submission
-    setFormData(createInitialBillForm)
-    setSelectedChallanIds([])
-    setPartySearch('')
+      if (typeof onEditComplete === 'function') {
+        onEditComplete()
+      }
+    } else {
+      setBillHistory?.((prev) => [record, ...prev])
+      setMessageTone('success')
+      setMessage('Bill saved to Bill History.')
+
+      // Reset Form Fields after successful submission
+      setFormData(createInitialBillForm)
+      setSelectedChallanIds([])
+      setPartySearch('')
+    }
   }
 
   return (
@@ -374,9 +412,14 @@ function YourBillForm({ parties = [], yourChalans = [], billHistory = [], setBil
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm font-semibold text-slate-700">Total Qty. {totals.quantity} | Total Amount {totals.amount.toFixed(2)}</div>
-          <button type="submit" className="h-11 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-xl">
-            Generate Bill
-          </button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button type="button" onClick={onCancel} className="h-11 w-full sm:w-auto rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
+              Cancel
+            </button>
+            <button type="submit" className="h-11 w-full sm:w-auto rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:shadow-xl">
+              {isEditMode ? 'Update Bill' : 'Generate Bill'}
+            </button>
+          </div>
         </div>
 
         <div className={`mt-3 rounded-xl border px-4 py-3 text-sm ${messageTone === 'error' ? 'border-rose-200 bg-rose-50 text-rose-700' : messageTone === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>

@@ -22,25 +22,7 @@ function YourBillReport({ billHistory = [], setBillHistory }) {
 
   const customScrollbarClass = "[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 hover:[&::-webkit-scrollbar-thumb]:bg-violet-500 [&::-webkit-scrollbar-track]:bg-transparent [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]"
 
-  useEffect(() => {
-    const handleAutoFitScale = () => {
-      if (previewContainerRef.current) {
-        const containerWidth = previewContainerRef.current.clientWidth - 24
-        const standardBillWidth = 980
 
-        if (containerWidth < standardBillWidth) {
-          const calculatedScale = Number((containerWidth / standardBillWidth).toFixed(2))
-          setZoomLevel(Math.max(calculatedScale, 0.35))
-        } else {
-          setZoomLevel(1)
-        }
-      }
-    }
-
-    handleAutoFitScale()
-    window.addEventListener('resize', handleAutoFitScale)
-    return () => window.removeEventListener('resize', handleAutoFitScale)
-  }, [selectedId])
 
   const handleZoomIn = () => {
     setZoomLevel((prev) => Math.min(prev + 0.1, 2.0))
@@ -143,7 +125,7 @@ function YourBillReport({ billHistory = [], setBillHistory }) {
     }
 
     navigate('/directory', {
-      state: { openYourBillForm: true },
+      state: { openYourBillForm: true, editYourBillId: selectedBill.id },
     })
   }
 

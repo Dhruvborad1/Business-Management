@@ -14,6 +14,7 @@ function DataEntryForm({
   onAddType,
   onRemoveType,
   onAddParty,
+  onCancel,
 }) {
   const [partySearch, setPartySearch] = useState('')
   const [activePartyRowId, setActivePartyRowId] = useState(null)
@@ -466,6 +467,13 @@ function DataEntryForm({
           className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Open Party Details
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="h-11 rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50"
+        >
+          Cancel
         </button>
         <button
           type="submit"
